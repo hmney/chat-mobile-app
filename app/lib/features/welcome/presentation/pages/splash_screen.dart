@@ -9,50 +9,51 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
-      body: Center(
-        child: Stack(
-          alignment: Alignment.center,
-          children: <Widget>[
-            Container(
-              width: 200.0,
-              height: 200.0,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(44.0),
-                color: Theme.of(context).accentColor,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.5),
-                    offset: Offset(0, 3),
-                    blurRadius: 10,
-                    spreadRadius: 2
-                  )
-                ],
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Theme.of(context).primaryColor,
+        body: Center(
+          child: Stack(
+            alignment: Alignment.center,
+            children: <Widget>[
+              Container(
+                width: 200.0,
+                height: 200.0,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(44.0),
+                  color: Theme.of(context).accentColor,
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.black.withOpacity(0.5),
+                        offset: Offset(0, 3),
+                        blurRadius: 10,
+                        spreadRadius: 2)
+                  ],
+                ),
               ),
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: SvgPicture.string(
-                    _logo,
-                    allowDrawingOutsideViewBox: true,
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: SvgPicture.string(
+                      _logo,
+                      allowDrawingOutsideViewBox: true,
+                    ),
                   ),
-                ),
-                Text(
-                  'LOVER\'S MSG',
-                  style: TextStyle(
-                    fontFamily: 'Open Sans',
-                    fontSize: 24,
-                    color: Theme.of(context).primaryColor,
-                    fontWeight: FontWeight.w700,
+                  Text(
+                    'LOVER\'S MSG',
+                    style: TextStyle(
+                      fontFamily: 'Open Sans',
+                      fontSize: 24,
+                      color: Theme.of(context).primaryColor,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-              ],
-            )
-          ],
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );
