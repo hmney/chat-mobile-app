@@ -1,6 +1,4 @@
-import 'package:app/features/authentication/data/repositories/user_repository.dart';
-import 'package:app/features/authentication/state/signup_state/signup_error_store.dart';
-import 'package:app/features/authentication/state/signup_state/signup_store.dart';
+import 'package:app/src/stores/authentication/authentication_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -183,7 +181,7 @@ class _SignupState extends State<Signup> {
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final SignupStore _signupStore = SignupStore();
+  final AuthenticationStore _authStore = AuthenticationStore();
 
   @override
   Widget build(BuildContext context) {
@@ -198,7 +196,7 @@ class _SignupState extends State<Signup> {
             child: Observer(
               builder: (_) => TextFormField(
                 controller: _usernameController,
-                onChanged: (value) => _signupStore.setUsername(value),
+                onChanged: (value) => _authStore.setUsername(value),
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(0),
@@ -208,7 +206,7 @@ class _SignupState extends State<Signup> {
                     Icons.person,
                     color: Theme.of(context).primaryColor.withOpacity(0.5),
                   ),
-                  errorText: _signupStore.error.username,
+                  errorText: _authStore.error.username,
                 ),
               ),
             ),
@@ -220,7 +218,7 @@ class _SignupState extends State<Signup> {
             child: Observer(
               builder: (_) => TextFormField(
                 controller: _emailController,
-                onChanged: (value) => _signupStore.setEmail(value),
+                onChanged: (value) => _authStore.setEmail(value),
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
@@ -242,7 +240,7 @@ class _SignupState extends State<Signup> {
             child: Observer(
               builder: (_) => TextFormField(
                 controller: _passwordController,
-                onChanged: (value) => _signupStore.setPassword(value),
+                onChanged: (value) => _authStore.setPassword(value),
                 obscureText: true,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
@@ -271,13 +269,7 @@ class _SignupState extends State<Signup> {
                   child: Observer(
                     builder: (_) => RaisedButton(
                       onPressed: () {
-                        _signupStore.validateForm();
-                        if (_signupStore.isFormValid)
-                        {
-                          print('The form is valid');
-                        } else {
-                          print('The form is not valid');
-                        }
+                        _authStore.signUp();
                       },
                       color: Theme.of(context).primaryColor,
                       hoverColor: Theme.of(context).primaryColorLight,
