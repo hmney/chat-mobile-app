@@ -69,19 +69,48 @@ mixin _$AuthenticationStore on _AuthenticationStore, Store {
     });
   }
 
-  final _$isFormValidAtom = Atom(name: '_AuthenticationStore.isFormValid');
+  final _$isLoggedInAtom = Atom(name: '_AuthenticationStore.isLoggedIn');
 
   @override
-  bool get isFormValid {
-    _$isFormValidAtom.reportRead();
-    return super.isFormValid;
+  bool get isLoggedIn {
+    _$isLoggedInAtom.reportRead();
+    return super.isLoggedIn;
   }
 
   @override
-  set isFormValid(bool value) {
-    _$isFormValidAtom.reportWrite(value, super.isFormValid, () {
-      super.isFormValid = value;
+  set isLoggedIn(bool value) {
+    _$isLoggedInAtom.reportWrite(value, super.isLoggedIn, () {
+      super.isLoggedIn = value;
     });
+  }
+
+  final _$signUpAsyncAction = AsyncAction('_AuthenticationStore.signUp');
+
+  @override
+  Future<void> signUp() {
+    return _$signUpAsyncAction.run(() => super.signUp());
+  }
+
+  final _$signInAsyncAction = AsyncAction('_AuthenticationStore.signIn');
+
+  @override
+  Future<void> signIn() {
+    return _$signInAsyncAction.run(() => super.signIn());
+  }
+
+  final _$signOutAsyncAction = AsyncAction('_AuthenticationStore.signOut');
+
+  @override
+  Future<void> signOut() {
+    return _$signOutAsyncAction.run(() => super.signOut());
+  }
+
+  final _$checkIsLoggedInAsyncAction =
+      AsyncAction('_AuthenticationStore.checkIsLoggedIn');
+
+  @override
+  Future<void> checkIsLoggedIn() {
+    return _$checkIsLoggedInAsyncAction.run(() => super.checkIsLoggedIn());
   }
 
   final _$_AuthenticationStoreActionController =
@@ -154,24 +183,13 @@ mixin _$AuthenticationStore on _AuthenticationStore, Store {
   }
 
   @override
-  void signUp() {
-    final _$actionInfo = _$_AuthenticationStoreActionController.startAction(
-        name: '_AuthenticationStore.signUp');
-    try {
-      return super.signUp();
-    } finally {
-      _$_AuthenticationStoreActionController.endAction(_$actionInfo);
-    }
-  }
-
-  @override
   String toString() {
     return '''
 status: ${status},
 username: ${username},
 email: ${email},
 password: ${password},
-isFormValid: ${isFormValid}
+isLoggedIn: ${isLoggedIn}
     ''';
   }
 }

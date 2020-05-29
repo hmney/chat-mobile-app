@@ -62,12 +62,28 @@ mixin _$AuthenticationErrorStore on _SignupErrorStore, Store {
     });
   }
 
+  final _$signupErrorAtom = Atom(name: '_SignupErrorStore.signupError');
+
+  @override
+  String get signupError {
+    _$signupErrorAtom.reportRead();
+    return super.signupError;
+  }
+
+  @override
+  set signupError(String value) {
+    _$signupErrorAtom.reportWrite(value, super.signupError, () {
+      super.signupError = value;
+    });
+  }
+
   @override
   String toString() {
     return '''
 username: ${username},
 email: ${email},
 password: ${password},
+signupError: ${signupError},
 hasErrors: ${hasErrors}
     ''';
   }

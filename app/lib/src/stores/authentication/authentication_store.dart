@@ -1,5 +1,8 @@
+import 'package:app/routes/app_routes.dart';
 import 'package:app/src/repositories/user_repository.dart';
 import 'package:app/src/stores/authentication/authentication_error_store.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
 
 part 'authentication_store.g.dart';
@@ -25,7 +28,7 @@ abstract class _AuthenticationStore with Store {
   String password = '';
 
   @observable
-  bool isFormValid = false;
+  bool isLoggedIn;
 
   @action
   setUsername(String value) => username = value;
@@ -34,7 +37,8 @@ abstract class _AuthenticationStore with Store {
   void validateUsername(String value) {
     if (value == null || value.isEmpty) {
       error.username = 'username canno\'t be blank';
-    } if (value.length < 6 || value.length > 8) {
+    }
+    if (value.length < 6 || value.length > 8) {
       error.username = 'username length must be between 6 and 8';
     } else {
       error.username = null;
@@ -66,13 +70,69 @@ abstract class _AuthenticationStore with Store {
   }
 
   @action
-  void signUp() {
-    validateUsername(this.username);
-    validateEmail(this.email);
-    validatePassword(this.password);
-    this.isFormValid = !error.hasErrors;
-    if (isFormValid) {
-      userRepository.signUp(email: email, password: password);
+  Future<void> signUp() async {
+    validateUsername(username);
+    validateEmail(email);
+    validatePassword(password);
+    if (!error.hasErrors) {
+      try {
+        await userRepository.signUp(email: email, password: password);
+        status = Status.Authenticated;
+        Modular.to.pushNamedAndRemoveUntil(
+          pathForRoute(APP_ROUTE.HOME),
+          (_) => false,
+        );
+      } on PlatformException catch (error) {
+        status = Status.Unauthenticated;
+        List<String> errors = error.toString().split(',');
+        print("Error: " + errors[1]);
+      }
+    }
+  }
+
+  @action
+  Future<void> signIn() async {
+    validateEmail(email);
+    validatePassword(password);
+    if (!error.hasErrors) {
+      try {
+        await userRepository.signIn(email: email, password: password);
+        status = Status.Authenticated;
+        Modular.to.pushNamedAndRemoveUntil(
+          pathForRoute(APP_ROUTE.HOME),
+          (_) => false,
+        );
+      } on PlatformException catch (error) {
+        status = Status.Unauthenticated;
+        List<String> errors = error.toString().split(',');
+        print("Error: " + errors[1]);
+      }
+    }
+  }
+
+  @action
+  Future<void> signOut() async {
+    try {
+      await userRepository.signOut();
+      status = Status.Unauthenticated;
+      username = '';
+      email = '';
+      password = '';
+      Modular.to.pushNamedAndRemoveUntil(
+        pathForRoute(APP_ROUTE.AUTHENTICATION),
+        (_) => false,
+      );
+    } catch (error) {
+      print(error);
+    }
+  }
+
+  @action
+  Future<void> checkIsLoggedIn() async {
+    try {
+      isLoggedIn = await userRepository.isSignedIn();
+    } catch (error) {
+      print(error);
     }
   }
 }

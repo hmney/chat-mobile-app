@@ -1,4 +1,6 @@
+import 'package:app/routes/app_routes.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class GetStartedScreen extends StatefulWidget {
@@ -33,6 +35,10 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
                 ),
                 child: RaisedButton(
                   onPressed: () {
+                    Modular.to.pushNamedAndRemoveUntil(
+                      pathForRoute(APP_ROUTE.AUTHENTICATION),
+                      (_) => false,
+                    );
                   },
                   color: Theme.of(context).primaryColor,
                   hoverColor: Theme.of(context).primaryColorLight,

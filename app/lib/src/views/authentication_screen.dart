@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 class AuthenticationScreen extends StatefulWidget {
   @override
@@ -98,74 +99,87 @@ class _LoginState extends State<Login> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 70, 0, 20),
-            width: 300,
-            height: 60,
-            child: TextFormField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(0),
-                ),
-                hintText: 'EMAIL',
-                prefixIcon: Icon(
-                  Icons.mail,
-                  color: Theme.of(context).primaryColor.withOpacity(0.5),
-                ),
-              ),
-            ),
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
-            width: 300,
-            height: 60,
-            child: TextFormField(
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(0),
-                ),
-                hintText: 'PASSWORD',
-                prefixIcon: Icon(
-                  Icons.lock,
-                  color: Theme.of(context).primaryColor.withOpacity(0.5),
-                ),
-              ),
-            ),
-          ),
-          Expanded(
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Container(
-                  width: 300,
-                  height: 54,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
+    return Observer(
+      builder: (_) => Form(
+        key: _formKey,
+        child: Column(
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.fromLTRB(0, 70, 0, 20),
+              width: 300,
+              height: 60,
+              child: TextFormField(
+                onChanged: (value) =>
+                    Provider.of<AuthenticationStore>(context).setEmail(value),
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(0),
                   ),
-                  child: RaisedButton(
-                    onPressed: () {},
-                    color: Theme.of(context).primaryColor,
-                    hoverColor: Theme.of(context).primaryColorLight,
-                    child: Text(
-                      'LOGIN',
-                      style: TextStyle(
-                        fontFamily: 'Open Sans',
-                        fontSize: 18,
-                        color: Theme.of(context).accentColor,
-                        fontWeight: FontWeight.bold,
+                  hintText: 'EMAIL',
+                  prefixIcon: Icon(
+                    Icons.mail,
+                    color: Theme.of(context).primaryColor.withOpacity(0.5),
+                  ),
+                  errorText:
+                      Provider.of<AuthenticationStore>(context).error.email,
+                ),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
+              width: 300,
+              height: 60,
+              child: TextFormField(
+                onChanged: (value) => Provider.of<AuthenticationStore>(context)
+                    .setPassword(value),
+                obscureText: true,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(0),
+                  ),
+                  hintText: 'PASSWORD',
+                  prefixIcon: Icon(
+                    Icons.lock,
+                    color: Theme.of(context).primaryColor.withOpacity(0.5),
+                  ),
+                  errorText:
+                      Provider.of<AuthenticationStore>(context).error.password,
+                ),
+              ),
+            ),
+            Expanded(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Container(
+                    width: 300,
+                    height: 54,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: RaisedButton(
+                      onPressed: () {
+                        Provider.of<AuthenticationStore>(context).signIn();
+                      },
+                      color: Theme.of(context).primaryColor,
+                      hoverColor: Theme.of(context).primaryColorLight,
+                      child: Text(
+                        'LOGIN',
+                        style: TextStyle(
+                          fontFamily: 'Open Sans',
+                          fontSize: 18,
+                          color: Theme.of(context).accentColor,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -181,22 +195,22 @@ class _SignupState extends State<Signup> {
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final AuthenticationStore _authStore = AuthenticationStore();
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 70, 0, 20),
-            width: 300,
-            height: 60,
-            child: Observer(
-              builder: (_) => TextFormField(
+    return Observer(
+      builder: (_) => Form(
+        key: _formKey,
+        child: Column(
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.fromLTRB(0, 70, 0, 20),
+              width: 300,
+              height: 60,
+              child: TextFormField(
                 controller: _usernameController,
-                onChanged: (value) => _authStore.setUsername(value),
+                onChanged: (value) => Provider.of<AuthenticationStore>(context)
+                    .setUsername(value),
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(0),
@@ -206,19 +220,19 @@ class _SignupState extends State<Signup> {
                     Icons.person,
                     color: Theme.of(context).primaryColor.withOpacity(0.5),
                   ),
-                  errorText: _authStore.error.username,
+                  errorText:
+                      Provider.of<AuthenticationStore>(context).error.username,
                 ),
               ),
             ),
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
-            width: 300,
-            height: 60,
-            child: Observer(
-              builder: (_) => TextFormField(
+            Container(
+              margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
+              width: 300,
+              height: 60,
+              child: TextFormField(
                 controller: _emailController,
-                onChanged: (value) => _authStore.setEmail(value),
+                onChanged: (value) =>
+                    Provider.of<AuthenticationStore>(context).setEmail(value),
                 keyboardType: TextInputType.emailAddress,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
@@ -229,18 +243,19 @@ class _SignupState extends State<Signup> {
                     Icons.email,
                     color: Theme.of(context).primaryColor.withOpacity(0.5),
                   ),
+                  errorText:
+                      Provider.of<AuthenticationStore>(context).error.email,
                 ),
               ),
             ),
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
-            width: 300,
-            height: 60,
-            child: Observer(
-              builder: (_) => TextFormField(
+            Container(
+              margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
+              width: 300,
+              height: 60,
+              child: TextFormField(
                 controller: _passwordController,
-                onChanged: (value) => _authStore.setPassword(value),
+                onChanged: (value) => Provider.of<AuthenticationStore>(context)
+                    .setPassword(value),
                 obscureText: true,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
@@ -251,25 +266,25 @@ class _SignupState extends State<Signup> {
                     Icons.lock,
                     color: Theme.of(context).primaryColor.withOpacity(0.5),
                   ),
+                  errorText:
+                      Provider.of<AuthenticationStore>(context).error.password,
                 ),
               ),
             ),
-          ),
-          Expanded(
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Container(
-                  width: 300,
-                  height: 54,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Observer(
-                    builder: (_) => RaisedButton(
+            Expanded(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Container(
+                    width: 300,
+                    height: 54,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: RaisedButton(
                       onPressed: () {
-                        _authStore.signUp();
+                        Provider.of<AuthenticationStore>(context).signUp();
                       },
                       color: Theme.of(context).primaryColor,
                       hoverColor: Theme.of(context).primaryColorLight,
@@ -286,9 +301,9 @@ class _SignupState extends State<Signup> {
                   ),
                 ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }

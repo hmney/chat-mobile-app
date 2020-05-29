@@ -14,6 +14,9 @@ abstract class _SignupErrorStore with Store {
   @observable
   String password;
 
+  @observable
+  String signupError;
+
   @computed
   bool get hasErrors => username != null || email != null || password != null;
 }
