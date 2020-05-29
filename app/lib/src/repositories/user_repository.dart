@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'package:app/src/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserRepository {
   final FirebaseAuth _firebaseAuth;
+  final Firestore _db = Firestore.instance;
 
   UserRepository({
     FirebaseAuth firebaseAuth,
@@ -35,5 +38,14 @@ class UserRepository {
 
   Future<FirebaseUser> getUser() async {
     return (await _firebaseAuth.currentUser());
+  }
+
+  void addUserToDatabase(UserModel userInfo, FirebaseUser user) async{
+    await _db.collection("users").document(user.uid).setData({
+      'uid': user.uid,
+      'username': userInfo.username,
+      'email': userInfo.email,
+      'password': userInfo.password,
+    });
   }
 }
