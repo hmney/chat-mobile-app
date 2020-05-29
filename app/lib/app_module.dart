@@ -1,9 +1,9 @@
 import 'package:app/app.dart';
 import 'package:app/routes/app_routes.dart';
-import 'package:app/src/views/authentication_screen.dart';
-import 'package:app/src/views/get_started_screen.dart';
-import 'package:app/src/views/home_screen.dart';
-import 'package:app/src/views/splash_screen.dart';
+import 'package:app/src/views/authentication/authentication_screen.dart';
+import 'package:app/src/views/get_started/get_started_screen.dart';
+import 'package:app/src/views/home/home_screen.dart';
+import 'package:app/src/views/splash/splash_screen.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 

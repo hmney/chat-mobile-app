@@ -2,7 +2,6 @@ import 'package:app/routes/app_routes.dart';
 import 'package:app/src/models/user_model.dart';
 import 'package:app/src/repositories/user_repository.dart';
 import 'package:app/src/stores/authentication/authentication_error_store.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:mobx/mobx.dart';
@@ -121,14 +120,18 @@ abstract class _AuthenticationStore with Store {
     }
   }
 
+  void freeStore() {
+    username = '';
+    email = '';
+    password = '';
+  }
+
   @action
   Future<void> signOut() async {
     try {
       await userRepository.signOut();
       status = Status.Unauthenticated;
-      username = '';
-      email = '';
-      password = '';
+      freeStore();
       Modular.to.pushNamedAndRemoveUntil(
         pathForRoute(APP_ROUTE.AUTHENTICATION),
         (_) => false,
