@@ -95,9 +95,11 @@ abstract class _AuthenticationStore with Store {
       } on PlatformException catch (error) {
         status = Status.Unauthenticated;
         List<String> errors = error.toString().split(',');
+        this.error.authErrorMsg = errors[1];
         print("Error: " + errors[1]);
       }
     }
+    print(this.error.authErrorMsg);
   }
 
   @action
@@ -115,6 +117,7 @@ abstract class _AuthenticationStore with Store {
       } on PlatformException catch (error) {
         status = Status.Unauthenticated;
         List<String> errors = error.toString().split(',');
+        this.error.authErrorMsg = errors[1];
         print("Error: " + errors[1]);
       }
     }

@@ -1,7 +1,11 @@
+import 'package:app/src/stores/authentication/authentication_store.dart';
 import 'package:app/src/views/authentication/login.dart';
 import 'package:app/src/views/authentication/signup.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mobx/mobx.dart';
+import 'package:provider/provider.dart';
 
 class AuthenticationScreen extends StatefulWidget {
   @override
@@ -9,12 +13,15 @@ class AuthenticationScreen extends StatefulWidget {
 }
 
 class _AuthenticationScreenState extends State<AuthenticationScreen> {
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: DefaultTabController(
         length: 2,
         child: Scaffold(
+          key: _scaffoldKey,
           resizeToAvoidBottomPadding: false,
           backgroundColor: Theme.of(context).accentColor,
           body: Column(

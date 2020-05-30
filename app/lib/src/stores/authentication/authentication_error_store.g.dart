@@ -62,18 +62,18 @@ mixin _$AuthenticationErrorStore on _SignupErrorStore, Store {
     });
   }
 
-  final _$signupErrorAtom = Atom(name: '_SignupErrorStore.signupError');
+  final _$authErrorMsgAtom = Atom(name: '_SignupErrorStore.authErrorMsg');
 
   @override
-  String get signupError {
-    _$signupErrorAtom.reportRead();
-    return super.signupError;
+  String get authErrorMsg {
+    _$authErrorMsgAtom.reportRead();
+    return super.authErrorMsg;
   }
 
   @override
-  set signupError(String value) {
-    _$signupErrorAtom.reportWrite(value, super.signupError, () {
-      super.signupError = value;
+  set authErrorMsg(String value) {
+    _$authErrorMsgAtom.reportWrite(value, super.authErrorMsg, () {
+      super.authErrorMsg = value;
     });
   }
 
@@ -83,7 +83,7 @@ mixin _$AuthenticationErrorStore on _SignupErrorStore, Store {
 username: ${username},
 email: ${email},
 password: ${password},
-signupError: ${signupError},
+authErrorMsg: ${authErrorMsg},
 hasErrors: ${hasErrors}
     ''';
   }
