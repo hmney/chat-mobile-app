@@ -1,4 +1,4 @@
-enum APP_ROUTE {SPLASH_SCREEN, GET_STARTED, AUTHENTICATION, HOME}
+enum APP_ROUTE {SPLASH_SCREEN, GET_STARTED, AUTHENTICATION, HOME, NEW_CHAT}
 
 String pathForRoute(APP_ROUTE route) {
   switch (route) {
@@ -8,6 +8,8 @@ String pathForRoute(APP_ROUTE route) {
       return "/login";
     case APP_ROUTE.HOME:
       return "/home";
+    case APP_ROUTE.NEW_CHAT:
+      return "/new_chat";
     case APP_ROUTE.SPLASH_SCREEN:
     default:
       return "/";
