@@ -79,7 +79,7 @@ abstract class _AuthenticationStore with Store {
       username: username,
       email: email,
       password: password,
-      picture: null,
+      profilePicture: null,
     );
 
     if (!error.hasErrors) {

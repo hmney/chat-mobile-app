@@ -1,6 +1,7 @@
 import 'package:app/app.dart';
 import 'package:app/routes/app_routes.dart';
 import 'package:app/src/views/authentication/authentication_screen.dart';
+import 'package:app/src/views/chat_screen/chat_screen.dart';
 import 'package:app/src/views/get_started/get_started_screen.dart';
 import 'package:app/src/views/home/home_screen.dart';
 import 'package:app/src/views/new_chat/new_chat_screen.dart';
@@ -33,6 +34,10 @@ class AppModule extends MainModule {
     Router(
       pathForRoute(APP_ROUTE.NEW_CHAT),
       child: (_, args) => NewChatScreen(),
+    ),
+    Router(
+      pathForRoute(APP_ROUTE.CHAT),
+      child: (_, args) => ChatScreen(chatId: args.data),
     )
   ];
 

@@ -9,9 +9,9 @@ class UserRepository {
 
   UserRepository({
     FirebaseAuth firebaseAuth,
-  })  : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+  }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
-  Future<AuthResult> signIn({String email, String password}) async{
+  Future<AuthResult> signIn({String email, String password}) async {
     return await _firebaseAuth.signInWithEmailAndPassword(
       email: email,
       password: password,
@@ -40,7 +40,24 @@ class UserRepository {
     return (await _firebaseAuth.currentUser());
   }
 
-  void addUserToDatabase(UserModel userInfo, FirebaseUser user) async{
+  Future<UserModel> getUserFromDatabase() async {
+    final _currentUser = await getUser();
+    UserModel selfUser;
+    await _db
+        .collection("users")
+        .document(_currentUser.uid)
+        .get()
+        .then((value) {
+      selfUser = UserModel(
+        uid: value.data['uid'],
+        email: value.data['email'],
+        username: value.data['username'],
+      );
+    });
+    return selfUser;
+  }
+
+  Future<void> addUserToDatabase(UserModel userInfo, FirebaseUser user) async {
     await _db.collection("users").document(user.uid).setData({
       'uid': user.uid,
       'username': userInfo.username,

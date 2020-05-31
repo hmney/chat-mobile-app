@@ -1,4 +1,5 @@
 import 'package:app/src/stores/authentication/authentication_store.dart';
+import 'package:app/src/stores/chat/chat_store.dart';
 import 'package:app/src/views/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -11,9 +12,12 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   AuthenticationStore authStore;
+  ChatStore chatStore;
+
   void initState() {
     super.initState();
     authStore = AuthenticationStore();
+    chatStore = ChatStore();
   }
 
   @override
@@ -21,6 +25,7 @@ class _AppState extends State<App> {
     return MultiProvider(
       providers: [
         Provider<AuthenticationStore>.value(value: authStore),
+        Provider<ChatStore>.value(value: chatStore),
       ],
       child: MaterialApp(
         title: 'Lover\'s Msg',
