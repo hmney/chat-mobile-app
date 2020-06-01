@@ -29,6 +29,9 @@ abstract class _AuthenticationStore with Store {
   String password = '';
 
   @observable
+  String uid;
+
+  @observable
   bool isLoggedIn;
 
   @action
@@ -71,23 +74,25 @@ abstract class _AuthenticationStore with Store {
   }
 
   @action
+  setUid(String value) => uid = value;
+
+  @action
   Future<void> signUp() async {
     validateUsername(username);
     validateEmail(email);
     validatePassword(password);
-    var userInfo = UserModel(
-      username: username,
-      email: email,
-      password: password,
-      profilePicture: null,
-    );
-
     if (!error.hasErrors) {
       try {
         await userRepository.signUp(email: email, password: password);
-        var user = await userRepository.getUser();
+
+        var userInfo = UserModel(
+          username: username,
+          email: email,
+          uid: await userRepository.getUserUid(),
+          profilePicture: null,
+        );
         status = Status.Authenticated;
-        userRepository.addUserToDatabase(userInfo, user);
+        userRepository.addUserToDatabase(userInfo);
         Modular.to.pushNamedAndRemoveUntil(
           pathForRoute(APP_ROUTE.HOME),
           (_) => false,

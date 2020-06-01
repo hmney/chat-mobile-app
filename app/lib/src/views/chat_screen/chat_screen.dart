@@ -1,25 +1,28 @@
-import 'package:app/app.dart';
-import 'package:app/src/models/chat_model.dart';
+import 'package:app/src/models/contact_model.dart';
 import 'package:app/src/stores/chat/chat_store.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
 
 class ChatScreen extends StatefulWidget {
-  String chatId;
+  final ContactModel contact;
 
-  ChatScreen({@required this.chatId});
+  ChatScreen({
+    @required this.contact,
+  }) : assert(contact != null);
 
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  String get chatId => widget.chatId;
+  ContactModel get contact => widget.contact;
   final TextEditingController _messageController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    Provider.of<ChatStore>(context).getThisUid();
     return SafeArea(
       child: Scaffold(
         backgroundColor: Theme.of(context).primaryColorLight,
@@ -37,7 +40,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               ),
               Text(
-                'User',
+                contact?.contactDetails?.username,
                 style: TextStyle(
                   color: Color(0xfffe6fb6),
                   fontWeight: FontWeight.bold,
@@ -55,61 +58,74 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ],
         ),
-        body: Column(
-          children: <Widget>[
-            Flexible(
-              child: StreamBuilder(
-                stream: Firestore.instance
-                    .collection("chats")
-                    .document(chatId)
-                    .collection("messages")
-                    .orderBy('time', descending: true)
-                    .limit(20)
-                    .snapshots(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.hasData) {
-                    return ListView.builder(
-                      padding:
-                          EdgeInsets.only(top: 8.0, left: 15.0, right: 15.0),
-                      itemCount: snapshot.data.documents.length,
-                      reverse: true,
-                      itemBuilder: (context, index) {
-                        return Align(
-                          alignment: Alignment.centerLeft,
-                          child: UnconstrainedBox(
-                            child: Container(
-                              constraints: BoxConstraints(maxWidth: 300),
-                              padding: EdgeInsets.all(8),
-                              margin: EdgeInsets.all(1),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColorDark,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Container(
-                                margin: EdgeInsets.only(bottom: 5),
-                                child: Text(
-                                  snapshot.data.documents[index]
-                                      ['content'],
-                                  style: TextStyle(
-                                    fontFamily: 'Open Sans',
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  }
-                  return Container();
-                },
+        body: chatMessages(),
+      ),
+    );
+  }
+
+  Widget chatMessages() {
+    return Observer(
+      builder: (_) => Column(
+        children: <Widget>[
+          Flexible(
+            child: StreamBuilder(
+              stream: Provider.of<ChatStore>(context)
+                  .getChatMessages(contact.chatId),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasData) {
+                  return messages(context, snapshot);
+                }
+                return Container();
+              },
+            ),
+          ),
+          messageTextField(),
+        ],
+      ),
+    );
+  }
+
+  Widget messages(BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+    return Observer(
+      builder: (_) => ListView.builder(
+        padding: EdgeInsets.only(top: 8.0, left: 15.0, right: 15.0),
+        itemCount: snapshot.data.documents.length,
+        reverse: true,
+        itemBuilder: (context, index) {
+          Provider.of<ChatStore>(context)
+              .setSenderUid(snapshot.data.documents[index]['sender_id']);
+          return Align(
+            alignment: Provider.of<ChatStore>(context).checkSenderUid
+                ? Alignment.centerRight
+                : Alignment.centerLeft,
+            child: UnconstrainedBox(
+              child: Container(
+                constraints: BoxConstraints(
+                  maxWidth: 300,
+                ),
+                padding: EdgeInsets.all(8),
+                margin: EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  color: (Provider.of<ChatStore>(context).checkSenderUid)
+                      ? Theme.of(context).primaryColorDark 
+                      : Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Container(
+                  margin: EdgeInsets.only(bottom: 5),
+                  child: Text(
+                    snapshot.data.documents[index]['content'],
+                    style: TextStyle(
+                      fontFamily: 'Open Sans',
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
               ),
             ),
-            messageTextField(),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -151,7 +167,7 @@ class _ChatScreenState extends State<ChatScreen> {
               backgroundColor: Color(0xfffe6fb6),
               onPressed: () {
                 Provider.of<ChatStore>(context)
-                    .postMessage(chatId, _messageController.text);
+                    .postMessage(contact.chatId, _messageController.text);
                 _messageController.clear();
               },
               child: Icon(

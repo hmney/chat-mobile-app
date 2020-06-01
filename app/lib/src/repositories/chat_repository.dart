@@ -1,4 +1,4 @@
-import 'package:app/src/models/chat_model.dart';
+import 'package:app/src/models/contact_model.dart';
 import 'package:app/src/models/message_model.dart';
 import 'package:app/src/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,81 +6,97 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ChatRepository {
   final Firestore _db = Firestore.instance;
 
-  Future<QuerySnapshot> getUserByEmail(String inputField) async {
-    return (_db
-        .collection('users')
-        .where('email', isEqualTo: inputField)
-        .getDocuments());
-  }
-
-  Future<String> createNewContact(
-      UserModel selfUser, UserModel otherUser) async {
-    String _chatId;
-
-    _chatId = await getChatId(selfUser, otherUser);
-    if (_chatId == null) {
-      await _db.collection("chats").add({
-        'user1Id': selfUser.uid,
-        'user2Id': otherUser.uid,
-      }).then((value) {
-        _chatId = value.documentID;
-      });
-      await _db
-          .collection("users")
-          .document(selfUser.uid)
-          .collection("contacts")
-          .document(otherUser.uid)
-          .setData({
-        'uid': otherUser.uid,
-        'username': otherUser.username,
-        'email': otherUser.email,
-        'chat_id': _chatId
-      });
-      await _db
-          .collection("users")
-          .document(otherUser.uid)
-          .collection("contacts")
-          .document(selfUser.uid)
-          .setData({
-        'uid': selfUser.uid,
-        'username': selfUser.username,
-        'email': selfUser.email,
-        'chat_id': _chatId
-      });
-    }
-    return _chatId;
-  }
-
-  Future<String> getChatId(UserModel selfUser, UserModel otherUser) async {
-    String _chatId;
-
-    await _db
-        .collection("users")
-        .document(selfUser.uid)
-        .collection("contacts")
-        .document(otherUser.uid)
-        .get()
-        .then((value) {
-      if (value.exists)
-        _chatId = value.data['chat_id'];
-    });
-    return _chatId;
-  }
-
-  Future<Stream<QuerySnapshot>> getChatMessages(String chatId) async {
+  Future<UserModel> getUserByEmail(String inputField) async {
+    UserModel user;
     try {
-      var result = _db
+      await _db
+          .collection('users')
+          .where('email', isEqualTo: inputField)
+          .getDocuments()
+          .then((value) {
+        if (value.documents.isNotEmpty) {
+          user = UserModel.fromJson(value.documents[0].data);
+        }
+      });
+      return user;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<ContactModel> createNewContact(
+      UserModel selfUser, UserModel otherUser) async {
+    ContactModel contact;
+
+    try {
+      await getContact(selfUser, otherUser).then((value) async {
+        if (value == null) {
+          await _db.collection("chats").add({
+            'user1': selfUser.toJson(),
+            'user2': otherUser.toJson(),
+          }).then((value) async {
+            var _chatId = value.documentID;
+            var contactInfo =
+                ContactModel(chatId: _chatId, contactDetails: otherUser);
+            await _db
+                .collection("users")
+                .document(selfUser.uid)
+                .collection("contacts")
+                .document(otherUser.uid)
+                .setData(contactInfo.toJson());
+            await _db
+                .collection("users")
+                .document(otherUser.uid)
+                .collection("contacts")
+                .document(selfUser.uid)
+                .setData(ContactModel(chatId: _chatId, contactDetails: selfUser)
+                    .toJson());
+            contact = contactInfo;
+          });
+        }
+        contact = value;
+      });
+      return contact;
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
+  Future<ContactModel> getContact(
+      UserModel selfUser, UserModel otherUser) async {
+    ContactModel contact;
+    try {
+      await _db
+          .collection("users")
+          .document(selfUser.uid)
+          .collection("contacts")
+          .document(otherUser.uid)
+          .get()
+          .then((value) {
+        if (value.exists) {
+          contact = ContactModel.fromJson(value.data);
+        }
+      });
+      return contact;
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
+  Stream<QuerySnapshot> getChatMessages(String chatId) {
+    try {
+      return _db
           .collection("chats")
           .document(chatId)
           .collection("messages")
           .orderBy('time', descending: true)
-          .limit(20)
           .snapshots();
-      return result;
     } catch (e) {
       print(e);
+      return null;
     }
-    return null;
   }
 
   Future<void> postMessage(String chatId, MessageModel message) async {

@@ -1,7 +1,9 @@
+import 'package:app/src/models/contact_model.dart';
 import 'package:app/src/models/message_model.dart';
 import 'package:app/src/models/user_model.dart';
 import 'package:app/src/repositories/chat_repository.dart';
 import 'package:app/src/repositories/user_repository.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mobx/mobx.dart';
 
 part 'chat_store.g.dart';
@@ -15,6 +17,42 @@ abstract class _ChatStore with Store {
   @observable
   String message = '';
 
+  @observable
+  String thisUid;
+
+  @observable
+  String senderUid;
+
+  @computed
+  bool get checkSenderUid => senderUid == thisUid;
+
+  @action
+  setThisUid(String value) => thisUid = value;
+
+  @action
+  setSenderUid(String value) => senderUid = value;
+
+  @action
+  Future<void> getThisUid() async {
+    String thisUid;
+
+    try {
+      thisUid = await _userRepository.getUserUid();
+      setThisUid(thisUid);
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  @action
+  Stream<QuerySnapshot> getChatMessages(String chatId) {
+    try {
+      return _chatRepository.getChatMessages(chatId);
+    } catch (error) {
+      return null;
+    }
+  }
+
   @action
   setMessage(String value) => message = value;
 
@@ -22,43 +60,21 @@ abstract class _ChatStore with Store {
   clearMessage() => message = '';
 
   @action
-  Future<String> createNewContact(String otherUserEmail) async {
+  Future<ContactModel> createNewContact(String otherUserEmail) async {
     try {
       UserModel _otherUser;
       UserModel _selfUser;
-      String chatId;
+      ContactModel contact;
 
-      await _chatRepository.getUserByEmail(otherUserEmail).then((value) async {
-        if (value.documents.length != 0) {
-          var result = value.documents[0].data;
-          _otherUser = UserModel(
-            uid: result['uid'],
-            username: result['username'],
-            email: result['email'],
-          );
-          _selfUser = await _userRepository.getUserFromDatabase();
-          chatId =
-              await _chatRepository.createNewContact(_selfUser, _otherUser);
-        }
-      });
-      return chatId;
+      _otherUser = await _chatRepository.getUserByEmail(otherUserEmail);
+      _selfUser = await _userRepository.getUserFromDatabase();
+      contact = await _chatRepository.createNewContact(_selfUser, _otherUser);
+      return contact;
     } catch (error) {
       print(error);
     }
     return null;
   }
-
-  @action
-  // Future<Stream<QuerySnapshot>> getChatMessages(String chatId) async {
-  //   try {
-  //     var messages = _chatRepository.getChatMessages(chatId);
-
-  //     return messages;
-  //   } catch (error) {
-  //     print(error);
-  //   }
-  //   return null;
-  // }
 
   @action
   Future<void> postMessage(String chatId, String text) async {
@@ -78,7 +94,17 @@ abstract class _ChatStore with Store {
     return MessageModel(
       content: message,
       senderId: currentUser.uid,
-      time: DateTime.now(),
+      time: FieldValue.serverTimestamp(),
     );
+  }
+
+  Future<UserModel> getUserbyEmail(String userEmail) async {
+    try {
+      var user = await _chatRepository.getUserByEmail(userEmail);
+      return user;
+    } catch (e) {
+      print(e);
+      return null;
+    }
   }
 }

@@ -14,7 +14,6 @@ class NewChatScreen extends StatefulWidget {
 }
 
 class _NewChatScreenState extends State<NewChatScreen> {
-  ChatRepository _chatRepository = ChatRepository();
   TextEditingController _emailController = TextEditingController();
 
   @override
@@ -79,12 +78,12 @@ class _NewChatScreenState extends State<NewChatScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).primaryColor,
         onPressed: () async {
-          var chatId = await Provider.of<ChatStore>(context)
+          var contact = await Provider.of<ChatStore>(context)
               .createNewContact(_emailController.value.text);
-          if (chatId != null)
+          if (contact != null)
             Modular.to.pushNamed(
               pathForRoute(APP_ROUTE.CHAT),
-              arguments: chatId,
+              arguments: contact,
             );
           else
             print('contact don\'t exist');

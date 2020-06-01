@@ -37,7 +37,7 @@ class AppModule extends MainModule {
     ),
     Router(
       pathForRoute(APP_ROUTE.CHAT),
-      child: (_, args) => ChatScreen(chatId: args.data),
+      child: (_, args) => ChatScreen(contact: args.data),
     )
   ];
 

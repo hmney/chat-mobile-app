@@ -40,6 +40,11 @@ class UserRepository {
     return (await _firebaseAuth.currentUser());
   }
 
+  Future<String> getUserUid() async {
+    var user = await getUser();
+    return user.uid;
+  }
+
   Future<UserModel> getUserFromDatabase() async {
     final _currentUser = await getUser();
     UserModel selfUser;
@@ -48,21 +53,13 @@ class UserRepository {
         .document(_currentUser.uid)
         .get()
         .then((value) {
-      selfUser = UserModel(
-        uid: value.data['uid'],
-        email: value.data['email'],
-        username: value.data['username'],
-      );
+          if (value.exists)
+            selfUser = UserModel.fromJson(value.data);
     });
     return selfUser;
   }
 
-  Future<void> addUserToDatabase(UserModel userInfo, FirebaseUser user) async {
-    await _db.collection("users").document(user.uid).setData({
-      'uid': user.uid,
-      'username': userInfo.username,
-      'email': userInfo.email,
-      'password': userInfo.password,
-    });
+  Future<void> addUserToDatabase(UserModel user) async {
+    await _db.collection("users").document(user.uid).setData(user.toJson());
   }
 }

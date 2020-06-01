@@ -9,6 +9,14 @@ part of 'chat_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic
 
 mixin _$ChatStore on _ChatStore, Store {
+  Computed<bool> _$checkSenderUidComputed;
+
+  @override
+  bool get checkSenderUid =>
+      (_$checkSenderUidComputed ??= Computed<bool>(() => super.checkSenderUid,
+              name: '_ChatStore.checkSenderUid'))
+          .value;
+
   final _$messageAtom = Atom(name: '_ChatStore.message');
 
   @override
@@ -24,11 +32,48 @@ mixin _$ChatStore on _ChatStore, Store {
     });
   }
 
+  final _$thisUidAtom = Atom(name: '_ChatStore.thisUid');
+
+  @override
+  String get thisUid {
+    _$thisUidAtom.reportRead();
+    return super.thisUid;
+  }
+
+  @override
+  set thisUid(String value) {
+    _$thisUidAtom.reportWrite(value, super.thisUid, () {
+      super.thisUid = value;
+    });
+  }
+
+  final _$senderUidAtom = Atom(name: '_ChatStore.senderUid');
+
+  @override
+  String get senderUid {
+    _$senderUidAtom.reportRead();
+    return super.senderUid;
+  }
+
+  @override
+  set senderUid(String value) {
+    _$senderUidAtom.reportWrite(value, super.senderUid, () {
+      super.senderUid = value;
+    });
+  }
+
+  final _$getThisUidAsyncAction = AsyncAction('_ChatStore.getThisUid');
+
+  @override
+  Future<void> getThisUid() {
+    return _$getThisUidAsyncAction.run(() => super.getThisUid());
+  }
+
   final _$createNewContactAsyncAction =
       AsyncAction('_ChatStore.createNewContact');
 
   @override
-  Future<String> createNewContact(String otherUserEmail) {
+  Future<ContactModel> createNewContact(String otherUserEmail) {
     return _$createNewContactAsyncAction
         .run(() => super.createNewContact(otherUserEmail));
   }
@@ -41,6 +86,39 @@ mixin _$ChatStore on _ChatStore, Store {
   }
 
   final _$_ChatStoreActionController = ActionController(name: '_ChatStore');
+
+  @override
+  dynamic setThisUid(String value) {
+    final _$actionInfo =
+        _$_ChatStoreActionController.startAction(name: '_ChatStore.setThisUid');
+    try {
+      return super.setThisUid(value);
+    } finally {
+      _$_ChatStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  dynamic setSenderUid(String value) {
+    final _$actionInfo = _$_ChatStoreActionController.startAction(
+        name: '_ChatStore.setSenderUid');
+    try {
+      return super.setSenderUid(value);
+    } finally {
+      _$_ChatStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  Stream<QuerySnapshot> getChatMessages(String chatId) {
+    final _$actionInfo = _$_ChatStoreActionController.startAction(
+        name: '_ChatStore.getChatMessages');
+    try {
+      return super.getChatMessages(chatId);
+    } finally {
+      _$_ChatStoreActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   dynamic setMessage(String value) {
@@ -67,7 +145,10 @@ mixin _$ChatStore on _ChatStore, Store {
   @override
   String toString() {
     return '''
-message: ${message}
+message: ${message},
+thisUid: ${thisUid},
+senderUid: ${senderUid},
+checkSenderUid: ${checkSenderUid}
     ''';
   }
 }

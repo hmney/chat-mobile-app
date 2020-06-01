@@ -2,14 +2,13 @@ class UserModel {
   String uid;
   String username;
   String email;
-  String password;
   String profilePicture;
 
   UserModel({
     this.uid,
     this.username,
     this.email,
-    this.password,
+    
     this.profilePicture,
   });
 
@@ -18,8 +17,7 @@ class UserModel {
       uid: json['uid'],
       username: json['username'],
       email: json['email'],
-      password: json['password'],
-      profilePicture: json['profilePicture'],
+      profilePicture: json['profile_picture'],
     );
   }
 
@@ -27,7 +25,6 @@ class UserModel {
         'uid': uid,
         'username': username,
         'email': email,
-        'password': password,
-        'profilePicture': profilePicture,
+        'profile_picture': profilePicture,
       };
 }
