@@ -2,6 +2,7 @@ import 'package:app/routes/app_routes.dart';
 import 'package:app/src/stores/chat/chat_store.dart';
 import 'package:app/src/widgets/my_drawer.dart';
 import 'package:app/src/widgets/chat_item.dart';
+import 'package:app/src/views/home/no_contact.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -58,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
           stream: Provider.of<ChatStore>(context).getAllMessages(),
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (snapshot.hasData) {
+            if (snapshot.hasData && snapshot.data.documents.length != 0) {
               return ListView.builder(
                 itemCount: snapshot.data.documents.length,
                 itemBuilder: (context, index) {
@@ -66,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               );
             }
-            return Container();
+            return NoContact();
           },
         ),
         floatingActionButton: FloatingActionButton(

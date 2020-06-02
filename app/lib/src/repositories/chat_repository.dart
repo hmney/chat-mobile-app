@@ -31,6 +31,7 @@ class ChatRepository {
     try {
       await getContact(selfUser, otherUser).then((value) async {
         contact = value;
+        print(contact);
         if (value == null) {
           await _db.collection("chats").add({
             'user1': selfUser.toJson(),
@@ -78,6 +79,7 @@ class ChatRepository {
           contact = ContactModel.fromJson(value.data);
         }
       });
+      print(contact);
       return contact;
     } catch (e) {
       print(e);
@@ -120,20 +122,17 @@ class ChatRepository {
         .collection("messages")
         .add(message.toJson());
 
-
-    print(contact.contactDetails.uid);
-    await _db
-        .collection("users")
-        .document(thisUid)
-        .collection("contacts")
-        .document(contact?.contactDetails?.uid)
-        .updateData({'last_message': message.toJson()});
-
-    await _db
-        .collection("users")
-        .document(contact?.contactDetails?.uid)
-        .collection("contacts")
-        .document(thisUid)
-        .updateData({'last_message': message.toJson()});
+    // await _db
+    //     .collection("users")
+    //     .document(thisUid)
+    //     .collection("contacts")
+    //     .document(contact?.contactDetails?.uid)
+    //     .setData({'last_message': message.toJson()}, merge: true);
+    // await _db
+    //     .collection("users")
+    //     .document(contact?.contactDetails?.uid)
+    //     .collection("contacts")
+    //     .document(thisUid)
+    //     .setData({'last_message': message.toJson()}, merge: true);
   }
 }

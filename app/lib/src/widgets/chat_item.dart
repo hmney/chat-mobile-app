@@ -15,15 +15,18 @@ class _ChatItemState extends State<ChatItem> {
       child: Row(children: <Widget>[
         leftSection(),
         Expanded(
-          child: Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                topRightSection(),
-                bottomRightSection(),
-              ],
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              topRightSection(),
+              bottomRightSection(),
+              Container(
+                margin: EdgeInsets.only(
+                  left: 15,
+                ),
+                child: Divider(),
+              ),
+            ],
           ),
         )
       ]),
@@ -49,15 +52,13 @@ class _ChatItemState extends State<ChatItem> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          Container(
-            child: Text(
-              'username',
-              style: TextStyle(
-                color: Color(0xfffe6fb6),
-                fontFamily: 'Open Sans',
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
+          Text(
+            'username',
+            style: TextStyle(
+              color: Color(0xfffe6fb6),
+              fontFamily: 'Open Sans',
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
             ),
           ),
           Text(
@@ -76,7 +77,7 @@ class _ChatItemState extends State<ChatItem> {
 
   Widget bottomRightSection() {
     return Container(
-      margin: EdgeInsets.only(left: 15),
+      margin: EdgeInsets.only(left: 15, top:10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
@@ -91,14 +92,12 @@ class _ChatItemState extends State<ChatItem> {
               ),
             ),
           ),
-          Container(
-            child: CircleAvatar(
-              backgroundColor: Color(0xfffe6fb6),
-              radius: 10.0,
-              child: Text(
-                "2",
-                style: TextStyle(color: Colors.white, fontSize: 12.0),
-              ),
+          CircleAvatar(
+            backgroundColor: Color(0xfffe6fb6),
+            radius: 10.0,
+            child: Text(
+              "2",
+              style: TextStyle(color: Colors.white, fontSize: 12.0),
             ),
           ),
         ],

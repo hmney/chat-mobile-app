@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class MessageModel {
   String content;
   String senderId;
-  FieldValue time;
+  Timestamp time;
 
   MessageModel({this.content, this.senderId, this.time});
 
@@ -24,6 +24,6 @@ class MessageModel {
   Map<String, dynamic> toJson() => {
         'content': content,
         'sender_id': senderId,
-        'time': time,
+        'time': FieldValue.serverTimestamp(),
       };
 }

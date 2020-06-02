@@ -60,8 +60,10 @@ abstract class _ChatStore with Store {
 
   @action
   Stream<QuerySnapshot> getAllMessages() {
+    List<ContactModel> contacts;
     try {
       return _chatRepository.getAllMessages(thisUid);
+      
     } catch (e) {
       return null;
     }
@@ -109,7 +111,6 @@ abstract class _ChatStore with Store {
     return MessageModel(
       content: message,
       senderId: currentUser.uid,
-      time: FieldValue.serverTimestamp(),
     );
   }
 

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class EmptyHome extends StatefulWidget {
+class NoContact extends StatefulWidget {
   @override
-  _EmptyHomeState createState() => _EmptyHomeState();
+  _NoContactState createState() => _NoContactState();
 }
 
-class _EmptyHomeState extends State<EmptyHome> {
+class _NoContactState extends State<NoContact> {
   @override
   Widget build(BuildContext context) {
     return Center(
