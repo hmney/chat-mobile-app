@@ -69,6 +69,21 @@ mixin _$AuthenticationStore on _AuthenticationStore, Store {
     });
   }
 
+  final _$uidAtom = Atom(name: '_AuthenticationStore.uid');
+
+  @override
+  String get uid {
+    _$uidAtom.reportRead();
+    return super.uid;
+  }
+
+  @override
+  set uid(String value) {
+    _$uidAtom.reportWrite(value, super.uid, () {
+      super.uid = value;
+    });
+  }
+
   final _$isLoggedInAtom = Atom(name: '_AuthenticationStore.isLoggedIn');
 
   @override
@@ -183,12 +198,24 @@ mixin _$AuthenticationStore on _AuthenticationStore, Store {
   }
 
   @override
+  dynamic setUid(String value) {
+    final _$actionInfo = _$_AuthenticationStoreActionController.startAction(
+        name: '_AuthenticationStore.setUid');
+    try {
+      return super.setUid(value);
+    } finally {
+      _$_AuthenticationStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 status: ${status},
 username: ${username},
 email: ${email},
 password: ${password},
+uid: ${uid},
 isLoggedIn: ${isLoggedIn}
     ''';
   }

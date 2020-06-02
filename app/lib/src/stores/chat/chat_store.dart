@@ -21,11 +21,16 @@ abstract class _ChatStore with Store {
   String thisUid;
 
   @observable
+  String thisUsername;
+
+  @observable
   String senderUid;
 
   @computed
   bool get checkSenderUid => senderUid == thisUid;
 
+  @action
+  setThisUsername(String value) => thisUsername = value;
   @action
   setThisUid(String value) => thisUid = value;
 
@@ -54,6 +59,15 @@ abstract class _ChatStore with Store {
   }
 
   @action
+  Stream<QuerySnapshot> getAllMessages() {
+    try {
+      return _chatRepository.getAllMessages(thisUid);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  @action
   setMessage(String value) => message = value;
 
   @action
@@ -77,11 +91,12 @@ abstract class _ChatStore with Store {
   }
 
   @action
-  Future<void> postMessage(String chatId, String text) async {
+  Future<void> postMessage(ContactModel contact, String text) async {
     try {
       if (this.message != '') {
         var message = await createMessage(text);
-        await _chatRepository.postMessage(chatId, message);
+        await _chatRepository.postMessage(
+            contact, thisUid, contact.chatId, message);
         clearMessage();
       }
     } catch (e) {

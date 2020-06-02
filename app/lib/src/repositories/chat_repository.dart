@@ -30,6 +30,7 @@ class ChatRepository {
 
     try {
       await getContact(selfUser, otherUser).then((value) async {
+        contact = value;
         if (value == null) {
           await _db.collection("chats").add({
             'user1': selfUser.toJson(),
@@ -54,7 +55,6 @@ class ChatRepository {
             contact = contactInfo;
           });
         }
-        contact = value;
       });
       return contact;
     } catch (e) {
@@ -99,11 +99,41 @@ class ChatRepository {
     }
   }
 
-  Future<void> postMessage(String chatId, MessageModel message) async {
+  Stream<QuerySnapshot> getAllMessages(String uid) {
+    try {
+      return _db
+          .collection("users")
+          .document(uid)
+          .collection("contacts")
+          .snapshots();
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
+  Future<void> postMessage(ContactModel contact, String thisUid, String chatId,
+      MessageModel message) async {
     await _db
         .collection("chats")
         .document(chatId)
         .collection("messages")
         .add(message.toJson());
+
+
+    print(contact.contactDetails.uid);
+    await _db
+        .collection("users")
+        .document(thisUid)
+        .collection("contacts")
+        .document(contact?.contactDetails?.uid)
+        .updateData({'last_message': message.toJson()});
+
+    await _db
+        .collection("users")
+        .document(contact?.contactDetails?.uid)
+        .collection("contacts")
+        .document(thisUid)
+        .updateData({'last_message': message.toJson()});
   }
 }

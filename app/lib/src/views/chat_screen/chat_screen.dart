@@ -167,7 +167,7 @@ class _ChatScreenState extends State<ChatScreen> {
               backgroundColor: Color(0xfffe6fb6),
               onPressed: () {
                 Provider.of<ChatStore>(context)
-                    .postMessage(contact.chatId, _messageController.text);
+                    .postMessage(contact, _messageController.text);
                 _messageController.clear();
               },
               child: Icon(

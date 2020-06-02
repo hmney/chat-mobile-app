@@ -1,8 +1,11 @@
 import 'package:app/routes/app_routes.dart';
-import 'package:app/src/views/home/empty_home.dart';
+import 'package:app/src/stores/chat/chat_store.dart';
 import 'package:app/src/widgets/my_drawer.dart';
+import 'package:app/src/widgets/chat_item.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -13,6 +16,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
+    Provider.of<ChatStore>(context).getThisUid();
     return SafeArea(
       child: Scaffold(
         key: _scaffoldKey,
@@ -50,7 +54,21 @@ class _HomeScreenState extends State<HomeScreen> {
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
-        body: EmptyHome(),
+        body: StreamBuilder(
+          stream: Provider.of<ChatStore>(context).getAllMessages(),
+          builder:
+              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasData) {
+              return ListView.builder(
+                itemCount: snapshot.data.documents.length,
+                itemBuilder: (context, index) {
+                  return ChatItem();
+                },
+              );
+            }
+            return Container();
+          },
+        ),
         floatingActionButton: FloatingActionButton(
           backgroundColor: Theme.of(context).primaryColor,
           onPressed: () {

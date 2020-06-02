@@ -47,6 +47,21 @@ mixin _$ChatStore on _ChatStore, Store {
     });
   }
 
+  final _$thisUsernameAtom = Atom(name: '_ChatStore.thisUsername');
+
+  @override
+  String get thisUsername {
+    _$thisUsernameAtom.reportRead();
+    return super.thisUsername;
+  }
+
+  @override
+  set thisUsername(String value) {
+    _$thisUsernameAtom.reportWrite(value, super.thisUsername, () {
+      super.thisUsername = value;
+    });
+  }
+
   final _$senderUidAtom = Atom(name: '_ChatStore.senderUid');
 
   @override
@@ -81,11 +96,22 @@ mixin _$ChatStore on _ChatStore, Store {
   final _$postMessageAsyncAction = AsyncAction('_ChatStore.postMessage');
 
   @override
-  Future<void> postMessage(String chatId, String text) {
-    return _$postMessageAsyncAction.run(() => super.postMessage(chatId, text));
+  Future<void> postMessage(ContactModel contact, String text) {
+    return _$postMessageAsyncAction.run(() => super.postMessage(contact, text));
   }
 
   final _$_ChatStoreActionController = ActionController(name: '_ChatStore');
+
+  @override
+  dynamic setThisUsername(String value) {
+    final _$actionInfo = _$_ChatStoreActionController.startAction(
+        name: '_ChatStore.setThisUsername');
+    try {
+      return super.setThisUsername(value);
+    } finally {
+      _$_ChatStoreActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   dynamic setThisUid(String value) {
@@ -121,6 +147,17 @@ mixin _$ChatStore on _ChatStore, Store {
   }
 
   @override
+  Stream<QuerySnapshot> getAllMessages() {
+    final _$actionInfo = _$_ChatStoreActionController.startAction(
+        name: '_ChatStore.getAllMessages');
+    try {
+      return super.getAllMessages();
+    } finally {
+      _$_ChatStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   dynamic setMessage(String value) {
     final _$actionInfo =
         _$_ChatStoreActionController.startAction(name: '_ChatStore.setMessage');
@@ -147,6 +184,7 @@ mixin _$ChatStore on _ChatStore, Store {
     return '''
 message: ${message},
 thisUid: ${thisUid},
+thisUsername: ${thisUsername},
 senderUid: ${senderUid},
 checkSenderUid: ${checkSenderUid}
     ''';
