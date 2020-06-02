@@ -1,35 +1,52 @@
+import 'package:app/routes/app_routes.dart';
+import 'package:app/src/models/contact_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 
 class ChatItem extends StatefulWidget {
+  final DocumentSnapshot contact;
+
+  ChatItem({@required this.contact}) : assert(contact != null);
   @override
   _ChatItemState createState() => _ChatItemState();
 }
 
 class _ChatItemState extends State<ChatItem> {
+  DocumentSnapshot get contact => widget.contact;
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(20),
-      width: 300,
-      height: 65,
-      child: Row(children: <Widget>[
-        leftSection(),
-        Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              topRightSection(),
-              bottomRightSection(),
-              Container(
-                margin: EdgeInsets.only(
-                  left: 15,
+    return InkWell(
+      onTap: () {
+        Modular.to.pushNamed(
+          pathForRoute(APP_ROUTE.CHAT),
+          arguments: ContactModel.fromJson(contact.data),
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.all(20),
+        width: 300,
+        height: 65,
+        child: Row(children: <Widget>[
+          leftSection(),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                topRightSection(),
+                bottomRightSection(),
+                Container(
+                  margin: EdgeInsets.only(
+                    left: 15,
+                  ),
+                  child: Divider(),
                 ),
-                child: Divider(),
-              ),
-            ],
-          ),
-        )
-      ]),
+              ],
+            ),
+          )
+        ]),
+      ),
     );
   }
 
@@ -53,7 +70,7 @@ class _ChatItemState extends State<ChatItem> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Text(
-            'username',
+            contact['contact_details']['username'],
             style: TextStyle(
               color: Color(0xfffe6fb6),
               fontFamily: 'Open Sans',
@@ -77,13 +94,13 @@ class _ChatItemState extends State<ChatItem> {
 
   Widget bottomRightSection() {
     return Container(
-      margin: EdgeInsets.only(left: 15, top:10),
+      margin: EdgeInsets.only(left: 15, top: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           Flexible(
             child: Text(
-              'Mesage here is so long as fuck man what you do to ',
+              contact['last_message']['content'],
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 color: Colors.grey,
@@ -92,14 +109,14 @@ class _ChatItemState extends State<ChatItem> {
               ),
             ),
           ),
-          CircleAvatar(
-            backgroundColor: Color(0xfffe6fb6),
-            radius: 10.0,
-            child: Text(
-              "2",
-              style: TextStyle(color: Colors.white, fontSize: 12.0),
-            ),
-          ),
+          // CircleAvatar(
+          //   backgroundColor: Color(0xfffe6fb6),
+          //   radius: 10.0,
+          //   child: Text(
+          //     "2",
+          //     style: TextStyle(color: Colors.white, fontSize: 12.0),
+          //   ),
+          // ),
         ],
       ),
     );

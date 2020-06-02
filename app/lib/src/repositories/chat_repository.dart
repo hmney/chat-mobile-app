@@ -122,17 +122,17 @@ class ChatRepository {
         .collection("messages")
         .add(message.toJson());
 
-    // await _db
-    //     .collection("users")
-    //     .document(thisUid)
-    //     .collection("contacts")
-    //     .document(contact?.contactDetails?.uid)
-    //     .setData({'last_message': message.toJson()}, merge: true);
-    // await _db
-    //     .collection("users")
-    //     .document(contact?.contactDetails?.uid)
-    //     .collection("contacts")
-    //     .document(thisUid)
-    //     .setData({'last_message': message.toJson()}, merge: true);
+    await _db
+        .collection("users")
+        .document(thisUid)
+        .collection("contacts")
+        .document(contact?.contactDetails?.uid)
+        .setData({'last_message': message.toJson()}, merge: true);
+    await _db
+        .collection("users")
+        .document(contact?.contactDetails?.uid)
+        .collection("contacts")
+        .document(thisUid)
+        .setData({'last_message': message.toJson()}, merge: true);
   }
 }

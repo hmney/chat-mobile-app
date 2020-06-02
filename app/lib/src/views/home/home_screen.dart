@@ -1,7 +1,7 @@
 import 'package:app/routes/app_routes.dart';
 import 'package:app/src/stores/chat/chat_store.dart';
 import 'package:app/src/widgets/my_drawer.dart';
-import 'package:app/src/widgets/chat_item.dart';
+import 'package:app/src/views/home/chat_item.dart';
 import 'package:app/src/views/home/no_contact.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -63,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
               return ListView.builder(
                 itemCount: snapshot.data.documents.length,
                 itemBuilder: (context, index) {
-                  return ChatItem();
+                  return ChatItem(contact: snapshot.data.documents[index]);
                 },
               );
             }

@@ -60,10 +60,8 @@ abstract class _ChatStore with Store {
 
   @action
   Stream<QuerySnapshot> getAllMessages() {
-    List<ContactModel> contacts;
     try {
       return _chatRepository.getAllMessages(thisUid);
-      
     } catch (e) {
       return null;
     }
